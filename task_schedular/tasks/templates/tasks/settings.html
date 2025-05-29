@@ -1,0 +1,36 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+<div class="content-section">
+    <div class="section-title">Settings</div>
+    
+    <div style="margin-bottom: 25px;">
+        <h3>Google Calendar Integration</h3>
+        <p>Connect to your Google Calendar to sync your tasks.</p>
+        <button class="btn">Connect Google Calendar</button>
+    </div>
+    
+    <div style="margin-bottom: 25px;">
+        <h3>Notifications</h3>
+        <div class="checkbox-label">
+            <input type="checkbox" id="enable_notifications">
+            <label for="enable_notifications">Enable browser notifications</label>
+        </div>
+        <div style="margin-top: 10px;">
+            <label>Default notification time before deadline</label>
+            <input type="number" value="30" style="width: 60px;"> minutes
+        </div>
+    </div>
+    
+    <div>
+        <h3>AI Assistant</h3>
+        <div class="checkbox-label">
+            <input type="checkbox" id="enable_ai">
+            <label for="enable_ai">Enable AI deadline suggestions</label>
+        </div>
+        <p style="margin-top: 5px; color: #666;">
+            The AI assistant will analyze your task completion patterns and suggest realistic deadlines.
+        </p>
+    </div>
+</div>
+{% endblock %}

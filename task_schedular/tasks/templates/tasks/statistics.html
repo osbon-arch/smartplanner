@@ -1,0 +1,47 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+<div class="content-section">
+    <div class="section-title">Task Statistics</div>
+    
+    <div class="stat-card">
+        <div>Tasks Completed</div>
+        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+            <div>
+                <div>Completed</div>
+                <div class="stat-value">{{ completed }}</div>
+            </div>
+            <div>
+                <div>Pending</div>
+                <div class="stat-value">{{ pending }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div>Tasks By Priority</div>
+        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+            <div>
+                <div>High</div>
+                <div class="stat-value">{{ priorities.High }}</div>
+            </div>
+            <div>
+                <div>Medium</div>
+                <div class="stat-value">{{ priorities.Medium }}</div>
+            </div>
+            <div>
+                <div>Low</div>
+                <div class="stat-value">{{ priorities.Low }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div>Task Completion Time</div>
+        <div style="margin-top: 10px;">
+            <div>Tasks Completed</div>
+            <div class="stat-value">{{ completed }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

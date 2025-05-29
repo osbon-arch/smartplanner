@@ -1,0 +1,14 @@
+echo "__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+venv/
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+.DS_Store
+.idea/"

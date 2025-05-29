@@ -1,0 +1,272 @@
+
+{% extends 'tasks/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="calendar-container">
+    <div class="calendar-header">
+        <h1>Calendar View</h1>
+        <div class="calendar-nav">
+            <a href="{% url 'tasks:calendar' year=prev_year month=prev_month %}" class="btn-nav">&lt; Prev</a>
+            <span class="current-month">{{ month_name }} {{ year }}</span>
+            <a href="{% url 'tasks:calendar' year=next_year month=next_month %}" class="btn-nav">Next &gt;</a>
+        </div>
+        <div class="view-options">
+            <a href="#" class="btn-view active">Month</a>
+            <a href="#" class="btn-view">Week</a>
+            <a href="#" class="btn-view">Day</a>
+        </div>
+    </div>
+
+    <table class="calendar-grid">
+        <thead>
+            <tr>
+                {% for day in weekdays %}
+                <th>{{ day }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in month_days %}
+            <tr>
+                {% for day in week %}
+                <td class="{% if day == today %}today{% endif %} {% if day == 0 %}empty{% endif %}">
+                    {% if day != 0 %}
+                    <div class="day-number">{{ day }}</div>
+                    <div class="day-events">
+                        {% if day in tasks_by_day %}
+                            {% for task in tasks_by_day|get_item:day %}
+                            <div class="calendar-task priority-{{ task.priority|lower }}" data-task-id="{{ task.id }}">
+                                <div class="task-time">
+                                    {{ task.due_date|time:"g:i A" }}
+                                </div>
+                                <div class="task-title">{{ task.title }}</div>
+                                <div class="task-checkbox">
+                                    <input type="checkbox" 
+                                        {% if task.completed %}checked{% endif %} 
+                                        data-task-id="{{ task.id }}"
+                                        class="task-toggle">
+                                </div>
+                                                                
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .calendar-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .current-month {
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+
+    .btn-nav {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+    }
+
+    .btn-nav:hover {
+        background-color: var(--primary-light);
+    }
+
+    .view-options {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-view {
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+    }
+
+    .btn-view.active {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .calendar-grid {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+    [data-theme="dark"] .calendar-grid {
+    background-color: var(--bg);
+    }
+
+    [data-theme="dark"] .calendar-grid th {
+    background-color: var(--card-bg);
+    color: var(--text-light);
+    }
+
+    [data-theme="dark"] .calendar-grid td {
+    background-color: var(--card-bg);
+    border-color: var(--border);
+    }
+
+    .calendar-grid th {
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        color: var(--text-light);
+        border-bottom: 1px solid var(--border);
+    }
+
+    [data-theme="dark"] .calendar-grid td.empty {
+    background-color: #1a202c;
+    }
+
+    .calendar-grid td {
+        height: 120px;
+        vertical-align: top;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+    }
+
+    .calendar-grid td.empty {
+        background-color: #f9fafb;
+    }
+
+    .calendar-grid td.today {
+        background-color: var(--primary-light);
+    }
+
+    .day-number {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-align: right;
+    }
+
+    .day-events {
+        overflow-y: auto;
+        max-height: 90px;
+    }
+
+    .calendar-task {
+        font-size: 0.75rem;
+        padding: 0.25rem;
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem;
+        background-color: white;
+        border-left: 3px solid;
+    }
+
+    .calendar-task .task-time {
+        font-weight: 600;
+        color: var(--text-light);
+    }
+
+    .calendar-task .task-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .priority-h {
+        border-left-color: var(--danger);
+    }
+
+    .priority-m {
+        border-left-color: var(--warning);
+    }
+
+    .priority-l {
+        border-left-color: var(--success);
+    }
+
+    /* Add this to your :root variables */
+    :root {
+        --primary: #4361ee;
+        --primary-light: #e0e7ff;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text: #374151;
+        --text-light: #6b7280;
+        --border: #e5e7eb;
+    }
+</style>
+{% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.calendar-task').forEach(task => {
+        task.addEventListener('click', function() {
+            const taskId = this.dataset.taskId;
+            window.location.href = `/tasks/edit/${taskId}/`;
+        });
+    });
+});
+
+document.querySelectorAll('.task-toggle').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const taskId = this.dataset.taskId;
+        const completed = this.checked;
+        
+        fetch(`/tasks/toggle/${taskId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({completed: completed})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.checked = data.completed;
+            }
+        });
+    });
+});
+
+document.querySelectorAll('.btn-nav').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.calendar-container').innerHTML = html;
+            history.pushState(null, null, url);
+        });
+    });
+});
+</script>

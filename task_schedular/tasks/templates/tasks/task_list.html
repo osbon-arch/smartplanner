@@ -1,0 +1,283 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+<div class="content-section">
+    <div class="header-container">
+        <h1 class="section-title">My Tasks</h1>
+        <div class="task-count">{{ tasks.count }} task{{ tasks.count|pluralize }}</div>
+    </div>
+    
+    {% if tasks %}
+        <div class="task-grid">
+            {% for task in tasks %}
+                <div class="task-card {% if task.completed %}completed{% endif %} priority-{{ task.priority|lower }}">
+                    <div class="task-header">
+                        <input type="checkbox" {% if task.completed %}checked{% endif %} 
+                               onchange="window.location.href='{% url 'tasks:toggle_task' task.pk %}'">
+                        <h3 class="task-title">{{ task.title }}</h3>
+                    </div>
+                    
+                    {% if task.description %}
+                        <p class="task-description">{{ task.description }}</p>
+                    {% endif %}
+                    
+                    <div class="task-meta">
+                        {% if task.due_date %}
+                            <div class="due-date">
+                                <i class="icon-clock"></i>
+                                {{ task.due_date|date:"M j, g:i A" }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="priority-badge">
+                            {{ task.get_priority_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="task-actions">
+                        <a href="{% url 'tasks:edit_task' task.pk %}" class="btn-edit">
+                            <i class="icon-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'tasks:delete_task' task.pk %}" class="btn-delete">
+                            <i class="icon-delete"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No tasks" class="empty-icon">
+            <h3>No tasks yet</h3>
+            <p>Create your first task to get started!</p>
+            <a href="{% url 'tasks:create_task' %}" class="btn-primary">Add New Task</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #e0e7ff;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --text: #374151;
+        --text-light: #6b7280;
+        --bg: #ffffff;
+        --card-bg: #ffffff;
+        --border: #e5e7eb;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text);
+        background-color: var(--bg);
+        line-height: 1.5;
+    }
+
+    .content-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .task-count {
+        background-color: var(--primary-light);
+        color: var(--primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .task-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .task-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        color: var(--text);
+        box-shadow: var(--shadow);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .task-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-card.completed {
+        opacity: 0.7;
+        background-color: #f8fafc;
+    }
+
+    .task-card.completed .task-title {
+        text-decoration: line-through;
+        color: var(--text-light);
+    }
+
+    .task-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .task-header input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 0.375rem;
+        border: 1px solid var(--border);
+        cursor: pointer;
+    }
+
+    .task-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text);
+    }
+
+    .task-description {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .task-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .due-date {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--text-light);
+    }
+
+    .priority-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    .priority-h .priority-badge {
+        background-color: #fee2e2;
+        color: var(--danger);
+    }
+
+    .priority-m .priority-badge {
+        background-color: #fef3c7;
+        color: var(--warning);
+    }
+
+    .priority-l .priority-badge {
+        background-color: #d1fae5;
+        color: var(--success);
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-edit, .btn-delete {
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+        background-color: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .btn-edit:hover {
+        background-color: #e0e7ff;
+    }
+
+    .btn-delete {
+        background-color: #fef2f2;
+        color: var(--danger);
+    }
+
+    .btn-delete:hover {
+        background-color: #fee2e2;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 0;
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        opacity: 0.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        background-color: #3a56d4;
+    }
+
+    /* Icons (using Unicode as fallback) */
+    .icon-clock::before { content: "🕒"; }
+    .icon-edit::before { content: "✏️"; }
+    .icon-delete::before { content: "🗑️"; }
+</style>
+{% endblock content %}
