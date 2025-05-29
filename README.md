@@ -1,0 +1,25 @@
+# Task Scheduler Online v1.0
+
+![App Screenshot](screenshot.png)
+
+## Features
+- ✅ Task management (Create, Read, Update, Delete)
+- 📅 Calendar integration
+- 📊 Productivity statistics
+- 🌙 Dark/Light mode
+- 🔐 User authentication
+
+## Requirements
+- Python 3.9+
+- Django 4.2+
+- PostgreSQL (recommended)
+
+## Installation
+```bash
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+## License
+MIT
